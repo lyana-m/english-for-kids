@@ -64,7 +64,6 @@ html {
 
 .menu span {
   top: 20px;
-  
 }
 
 .menu span:after {
@@ -112,12 +111,14 @@ html {
   padding: 15px 20px;
   transition: left 0.3s;
   // background: #16a085;
-  background: linear-gradient(180deg, #0099AE 0%, #00BF82 100%);;
+  background: linear-gradient(180deg, #0099ae 0%, #00bf82 100%);
   z-index: 20;
 }
 
 .nav-list {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -130,10 +131,10 @@ html {
   transition: opacity 0.5s 0.1s, transform 0.5s 0.1s;
 }
 
-.nav-opened {  
-    left: 0;
-    box-shadow: 4px 0px 20px 0px rgba(0, 0, 0, 0.5);    
-    overflow-y: auto;  
+.nav-opened {
+  left: 0;
+  box-shadow: 4px 0px 20px 0px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
 
   .nav-item {
     opacity: 1;
@@ -194,10 +195,10 @@ html {
     color: transparent;
     background: var(--white);
     height: 1px;
-    transition: all .4s;
+    transition: all 0.4s;
   }
 
-  &:not(.nav__link_active):hover::after {
+  &:not(.nav-link_active):hover::after {
     width: 100%;
   }
 
@@ -207,7 +208,6 @@ html {
   }
 
   &_active {
-    font-weight: 900;
     border-bottom: 1px solid var(--white);
     cursor: default;
   }
@@ -274,7 +274,7 @@ html {
 .cards-contaiter {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
@@ -282,7 +282,7 @@ html {
   width: 300px;
   position: relative;
   // width: calc(100% / 4 - 30px);
-  margin: 40px;
+  margin: 20px;
   height: 290px;
   cursor: pointer;
   border-radius: 20px;
@@ -360,6 +360,8 @@ html {
 .categories-inner {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .category-card {
@@ -371,6 +373,7 @@ html {
   background: linear-gradient(180deg, #0099ae, #00bf82 40%, #fff 0, #fff);
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  text-decoration: none;
 
   &:hover {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
