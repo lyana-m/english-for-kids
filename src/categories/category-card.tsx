@@ -1,41 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SET_CARD_SET_NUMBER } from '../constants';
+import { RootState } from '../reducers/rootReducer';
 
 interface IProps {
-  title?: string;
-  image?: string;
+  title: string;
+  image: string;
   setNumber: number;
 }
 
-// interface State {
-//   title: string;
-// }
-
-// export class CategoryCard extends React.Component<IProps, {}> {
-//   constructor(props: IProps) {
-//     super(props);
-//   }
-
 export const CategoryCard = (props: IProps) => {
+  const mode = useSelector((state: RootState) => state.cardSet?.mode);
   const dispatch = useDispatch();
 
   const setCardSetNumber = (number: number) => {
-    dispatch({ type: SET_CARD_SET_NUMBER, number: number });
+    dispatch({ type: SET_CARD_SET_NUMBER, number });
   };
 
-  // render() {
   return (
     <Link
       onClick={() => setCardSetNumber(props.setNumber)}
       to="/wordset"
-      className="card category-card">
+      className={mode === 'train' ? 'card category-card' : 'card category-card category-card-game'}>
       <div className="category-image">
-        <img className="" src={'./assets/' + props.image} alt="dance"></img>
+        <img className="" src={`./assets/${props.image}`} alt="dance" />
       </div>
       <h2 className="category-name">{props.title}</h2>
     </Link>
   );
 };
-// }

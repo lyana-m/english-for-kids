@@ -12,6 +12,8 @@ html {
   --green: #0ead69;
   --white: #ffffff;
   --dark-gradient: #0099ae;
+  --green-gradient: linear-gradient(180deg, #0099ae 0%, #00bf82 100%);
+  --orange-gradient: linear-gradient(180deg, #fd6a63 0%, #feb46b 100%);
 }
 
 *,
@@ -38,7 +40,6 @@ html {
   position: relative;
   width: 40px;
   height: 40px;
-  // background: red;
   cursor: pointer;
   z-index: 30;
 }
@@ -78,8 +79,7 @@ html {
   content: '';
   top: 0px;
   transform: rotate(45deg);
-  transition: top 300ms,
-    transform 300ms 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: top 300ms, transform 300ms 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .menu span.active:after {
@@ -87,8 +87,7 @@ html {
   bottom: 0;
   width: 100%;
   transform: rotate(-45deg);
-  transition: bottom 300ms,
-    transform 300ms 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: bottom 300ms, transform 300ms 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .menu span.active {
@@ -106,12 +105,10 @@ html {
   top: 0;
   bottom: 0;
   margin: 0;
-  /* сдвигаем (прячем) панель относительно левого края страницы */
   left: -320px;
   padding: 15px 20px;
   transition: left 0.3s;
-  // background: #16a085;
-  background: linear-gradient(180deg, #0099ae 0%, #00bf82 100%);
+  background: var(--green-gradient);
   z-index: 20;
 }
 
@@ -216,59 +213,112 @@ html {
 .nav-link:hover,
 .nav-link:focus {
   color: var(--white);
-  // font-weight: 800;
-  // padding: 15px;
 }
 
 .switch {
-  &__box {
-    position: relative;
-    display: inline-block;
-    width: 70px;
-    height: 30px;
-    border-radius: 5px;
-  }
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 90px;
+  height: 30px;
+  padding: 3px;
+  border-radius: 18px;
+  cursor: pointer;
+}
 
-  &__input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
+.switch-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
 
-  &__slider {
+.switch-label {
+  position: relative;
+  display: block;
+  height: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  background: var(--green-gradient);
+  border-radius: inherit;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.15);
+  transition: 0.15s ease-out;
+  transition-property: opacity background;
+  &:before,
+  &:after {
     position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--dark-gradient);
-    border-radius: 10px;
+    top: 50%;
+    margin-top: -0.5em;
+    line-height: 1.2;
+    transition: inherit;
+    color: #fff;
+  }
+  &:before {
+    content: attr(data-off);
+    right: 11px;
+  }
+  &:after {
+    content: attr(data-on);
+    left: 11px;
+    opacity: 0;
+  }
+}
 
-    &::before {
-      position: absolute;
-      content: '';
-      height: 20px;
-      width: 20px;
-      left: 6px;
-      bottom: 5px;
-      background-color: var(--white);
-      border-radius: 5px;
-      box-shadow: 2px 4px 15px rgba(6, 12, 70, 0.15);
+.switch-input {
+  &:checked {
+    ~ .switch-label {
+      background: var(--orange-gradient);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 0 3px rgba(0, 0, 0, 0.2);
+      &:before {
+        opacity: 0;
+      }
+      &:after {
+        opacity: 1;
+      }
+    }
+    ~ .switch-handle {
+      left: 60px;
+      box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.2);
     }
   }
+}
 
-  &__input:checked + .switch__slider {
-    background-color: var(--green);
+.switch-handle {
+  position: absolute;
+  top: 3px;
+  left: 1px;
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  background-image: linear-gradient(to bottom, white 40%, #f0f0f0);
+  transition: left 0.15s ease-out;
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -6px 0 0 -6px;
+    width: 12px;
+    height: 12px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    box-shadow: inset 0 1px rgba(0, 0, 0, 0.02);
+    background-image: linear-gradient(to bottom, #eeeeee, white);
   }
+}
 
-  &__input:checked + .switch__slider::before {
-    -webkit-transform: translateX(38px);
-    -ms-transform: translateX(38px);
-    transform: translateX(38px);
-    background-color: var(--white);
-    box-shadow: 2px 4px 15px rgba(230, 230, 230, 0.15);
-  }
+.selected-category {
+  margin-bottom: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 30px;
+  color: var(--dark-gradient);
+}
+
+.main-container {
+  min-height: calc(100vh - 160px);
 }
 
 .cards-contaiter {
@@ -276,32 +326,29 @@ html {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .card {
-  width: 300px;
+  width: 280px;
   position: relative;
-  // width: calc(100% / 4 - 30px);
   margin: 20px;
-  height: 290px;
+  height: 270px;
   cursor: pointer;
   border-radius: 20px;
   perspective: 1000px;
-  // box-shadow: 0 1px 10px rgba(0,0,0,0.15);
-  // transition: all .3s ease;
-  // overflow: hidden;
+}
 
-  // &:hover {
-  //   // box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  //   // transform: scale(1.01);
-  // }
+.guessed {
+  opacity: 30%;
+  cursor: default;
+  pointer-events: none;
 }
 
 .front,
 .back {
   border-radius: 12px;
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
-  // box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.05);
   background: white;
   position: absolute;
   width: 100%;
@@ -310,16 +357,13 @@ html {
   top: 0;
   transition: all 0.3s ease;
   backface-visibility: hidden;
-
-  // &:hover {
-  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  //   transform: scale(1.005);
-  // }
+  background-size: cover;
 }
 
 .back {
   transform: scale(-1, 1);
   transform: rotateY(180deg);
+  cursor: default;
 }
 
 .front-flipped {
@@ -357,6 +401,98 @@ html {
   }
 }
 
+.game-button {
+  width: 200px;
+  text-transform: uppercase;
+  padding: 15px 30px;
+  margin-bottom: 30px;
+  border: none;
+  outline: none;
+  background: var(--orange-gradient);
+  color: var(--white);
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0);
+  transition: all 0.3s;
+
+  &::before {
+    border-radius: inherit;
+    background-image: var(--green-gradient);
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    z-index: -100;
+    transition: all 0.3s;
+  }
+
+  &:hover {
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+.repeat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.stars-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 50px;
+  overflow-x: hidden;
+}
+
+.star {
+  margin: 10px;
+}
+
+.game-result {
+  font-size: 40px;
+  text-transform: uppercase;
+  color: #fd6a63;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.result-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 40%;
+  }
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+}
+
 .categories-inner {
   display: flex;
   flex-wrap: wrap;
@@ -381,9 +517,12 @@ html {
   }
 }
 
+.category-card-game {
+  background: linear-gradient(180deg, #fd6a63, #feb46b 40%, #fff 0, #fff);
+}
+
 .category-image {
   position: relative;
-  // overflow: hidden;
   width: 140px;
   height: 140px;
   border-radius: 50%;
@@ -415,4 +554,29 @@ html {
 .category-name {
   text-transform: uppercase;
   color: var(--dark-gradient);
+}
+
+.footer {
+  background: var(--green-gradient);
+  background: #9f8dda;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+}
+
+.github {
+  width: 35px;
+
+  img {
+    width: 100%;
+  }
+}
+
+.rs-logo {
+  width: 80px;
 }

@@ -1,32 +1,26 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Navigation } from './navigation';
+import { RootState } from '../reducers/rootReducer';
+import { IS_MENU_OPENED } from '../constants';
 
-interface IState {
-  isOpened: boolean,
-}
+export const Menu = () => {
+  const isMenuOpened = useSelector((state: RootState) => state.cardSet?.isMenuOpened);
 
-interface IProps {} 
+  const dispatch = useDispatch();
+  const menuClickHandler = () => {
+    dispatch({
+      type: IS_MENU_OPENED,
+      isMenuOpened: !isMenuOpened,
+    });
+  };
 
-export class Menu extends React.Component<IProps, IState> {
-  constructor(props: IProps){
-    super(props);
-    this.state = {
-      isOpened: false
-    }
-  }
-
-  menuClickHandler() {
-    this.setState({ isOpened: this.state.isOpened ? false : true });
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        <div className="menu" onClick={() => this.menuClickHandler()}>
-          <span className={this.state.isOpened ? 'active' : ''}/>
-        </div>
-        <Navigation isOpened={this.state.isOpened}/>
-      </React.Fragment>
-    );
-  }
-}
+  return (
+    <>
+      <div className="menu" onClick={() => menuClickHandler()}>
+        <span className={isMenuOpened ? 'line active' : 'line'} />
+      </div>
+      <Navigation />
+    </>
+  );
+};

@@ -1,72 +1,50 @@
-import React from 'react';
-import { IWordCard } from './cardsProps';
+import React, { useState } from 'react';
 
-// export interface IWordCardProps {
-//   [key: string]: string;
-// }
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducers/rootReducer';
+import { playSound } from '../utils';
 
-// interface IWordCardState {
-//   word?: string;
-//   translation?: string;
-//   image?: string;
-//   audioSrc?: string;
-//   isFlipped: boolean;
-// }
+interface IGameHandler {
+  (word: string | undefined): void;
+}
 
-// interface IUpdateCardsSetNumber {
-//   (number: number): void;
-// }
-
-interface IProps {
+export interface IProps {
   word?: string;
   translation?: string;
   image?: string;
   audioSrc?: string;
-  // updateCardsSetNumber: IUpdateCardsSetNumber;
+  isGameStarted: boolean;
+  gameHandler: IGameHandler;
+  isCardGuessed: boolean;
 }
 
-interface IState {
-  isFlipped: boolean;
-}
+export const WordCard = (props: IProps) => {
+  const [isFlipped, setFlipped] = useState(false);
 
-export class WordCard extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-    this.state = {
-      isFlipped: false,
-    };
-  }
+  const mode = useSelector((state: RootState) => state.cardSet?.mode);
 
-  handleArrowClick() {
-    this.setState({ isFlipped: true });
-  }
+  const playWord = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, src: string | undefined) => {
+    if (!(e.target as HTMLElement).classList.contains('arrow-btn-icon') && mode === 'train') {
+      playSound(src);
+    }
+  };
 
-  handleMouseLeave() {
-    this.setState({ isFlipped: false });
-  }
+  const cardImage = {
+    background: `url(./assets/${props.image}) top left / cover no-repeat`,
+  };
 
-  async playSound(src: string | undefined) {
-    const audio = new Audio();
-    if (src) audio.src = './assets/' + src;
-    audio.currentTime = 0;
-    audio.play();
-  }
-
-  render() {
-    const cardImage = {
-      background: 'url(./assets/' + this.props.image + ')',
-    };
-
-    return (
-      <div className="card">
-        <div
-          onClick={() => this.playSound(this.props.audioSrc)}
-          className={!this.state.isFlipped ? 'front' : 'front front-flipped'}
-          style={cardImage}>
+  return (
+    <div className={props.isCardGuessed ? 'card guessed' : 'card'}>
+      <div
+        onClick={(e) => (props.isGameStarted ? props.gameHandler(props.word) : playWord(e, props.audioSrc))}
+        className={!isFlipped ? 'front' : 'front front-flipped'}
+        style={cardImage}>
+        {mode === 'train' && (
           <div className="info">
-            <p className="word">{this.props.word}</p>
-            <div className="arrow-btn" onClick={() => this.handleArrowClick()}>
+            <p className="word">{props.word}</p>
+            <div className="arrow-btn" onClick={() => setFlipped(true)}>
               <svg
+                className="arrow-btn-icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -75,16 +53,18 @@ export class WordCard extends React.Component<IProps, IState> {
               </svg>
             </div>
           </div>
-        </div>
+        )}
+      </div>
+      {mode === 'train' && (
         <div
-          className={!this.state.isFlipped ? 'back' : 'back back-flipped'}
+          className={!isFlipped ? 'back' : 'back back-flipped'}
           style={cardImage}
-          onMouseLeave={() => this.handleMouseLeave()}>
+          onMouseLeave={() => setFlipped(false)}>
           <div className="info">
-            <p className="word">{this.props.translation}</p>
+            <p className="word">{props.translation}</p>
           </div>
         </div>
-      </div>
-    );
-  }
-}
+      )}
+    </div>
+  );
+};

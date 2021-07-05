@@ -31,8 +31,10 @@ module.exports = {
       'react/destructuring-assignment': 'off',
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/no-static-element-interactions': 'off',
+      'jsx-a11y/no-noninteractive-element-interactions': 'off',
       'react/no-unused-state': 'off',
       'react/prefer-stateless-function': 'off',
+      'react/no-array-index-key': 'off',
       'prettier/prettier': [
         'error',
         {
