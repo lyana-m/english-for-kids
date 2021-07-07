@@ -14,7 +14,13 @@ export const Switch = () => {
   return (
     <div className="switch">
       <label className="switch" htmlFor="checkbox">
-        <input type="checkbox" className="switch-input" id="checkbox" onChange={() => changeHandler()} />
+        <input
+          type="checkbox"
+          className="switch-input"
+          id="checkbox"
+          checked={mode === 'game' ? true : false}
+          onChange={() => changeHandler()}
+        />
         <span className="switch-label" data-on="Play" data-off="Train" />
         <span className="switch-handle" />
       </label>

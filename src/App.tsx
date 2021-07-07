@@ -7,11 +7,11 @@ import { Categories } from './categories/categories';
 import { WordSet } from './word-set/word-set';
 import { RootState } from './reducers/rootReducer';
 import { IS_MENU_OPENED } from './constants';
+import { Statistics } from './statistics/statistics';
+import { cardsSet, categoriesSet } from './word-set/cardsProps';
 
 const App = () => {
   const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
-
-  const isMenuOpened = useSelector((state: RootState) => state.cardSet?.isMenuOpened);
   const dispatch = useDispatch();
 
   const appClickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -27,6 +27,30 @@ const App = () => {
     }
   };
 
+  const initialStorageFill = () => {
+    categoriesSet.forEach((set, index) => {
+      cardsSet[index].forEach((card) => {
+        const savedCard = localStorage.getItem(card.word);
+        if (!savedCard) {
+          localStorage.setItem(
+            card.word,
+            JSON.stringify({
+              word: card.word,
+              translation: card.translation,
+              category: set,
+              clicks: 0,
+              correct: 0,
+              wrong: 0,
+              percentage: 0,
+              image: card.image,
+              audio: card.audioSrc,
+            }),
+          );
+        }
+      });
+    });
+  };
+  initialStorageFill();
   return (
     <div className="App" onClick={(e) => appClickHandler(e)}>
       <Header />
@@ -36,6 +60,7 @@ const App = () => {
           path="/wordset"
           render={() => (cardSetNumber === -1 ? <Redirect to="/" /> : <Route path="/wordset" component={WordSet} />)}
         />
+        <Route path="/statistics" component={Statistics} />
       </Switch>
       <Footer />
     </div>

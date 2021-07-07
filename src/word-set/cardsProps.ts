@@ -175,10 +175,10 @@ export const cardsSet: IWordCard[][] = [
       audioSrc: 'audio/bird.mp3',
     },
     {
-      word: 'fish',
-      translation: 'рыба',
-      image: 'img/fish1.jpg',
-      audioSrc: 'audio/fish.mp3',
+      word: 'elephant',
+      translation: 'слон',
+      image: 'img/elephant.jpg',
+      audioSrc: 'audio/elephant.mp3',
     },
     {
       word: 'frog',
@@ -418,5 +418,3 @@ export const cardsSet: IWordCard[][] = [
     },
   ],
 ];
-
-// export default cardsProps;

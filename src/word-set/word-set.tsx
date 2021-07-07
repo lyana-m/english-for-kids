@@ -9,7 +9,8 @@ import { GameOver } from './game-over';
 
 export interface ISelectedCard {
   word: string;
-  audioSrc: string;
+  audioSrc?: string;
+  translation?: string;
 }
 
 export const WordSet = () => {
@@ -40,17 +41,60 @@ export const WordSet = () => {
     playSound(playedCard.audioSrc);
   };
 
-  const gameHandler = (word: string | undefined) => {
-    const selectedCardWord = word;
+  const saveCorrect = (card: ISelectedCard) => {
+    const old = localStorage.getItem(card.word);
+
+    if (old) {
+      const savedCard = JSON.parse(old);
+      localStorage.setItem(
+        savedCard.word,
+        JSON.stringify({
+          word: savedCard.word,
+          translation: savedCard.translation,
+          category: savedCard.category,
+          clicks: savedCard.clicks,
+          correct: savedCard.correct + 1,
+          wrong: savedCard.wrong,
+          percentage: Math.ceil(((savedCard.correct + 1) / (savedCard.clicks ? savedCard.clicks : 1)) * 100) / 100,
+          image: savedCard.image,
+          audio: savedCard.audio,
+        }),
+      );
+    }
+  };
+
+  const saveWrong = (card: ISelectedCard) => {
+    const old = localStorage.getItem(card.word);
+    if (old) {
+      const savedCard = JSON.parse(old);
+      localStorage.setItem(
+        card.word,
+        JSON.stringify({
+          word: savedCard.word,
+          translation: savedCard.translation,
+          category: savedCard.category,
+          clicks: savedCard.clicks,
+          correct: savedCard.correct,
+          wrong: savedCard.wrong + 1,
+          percentage: savedCard.percentage,
+          image: savedCard.image,
+          audio: savedCard.audio,
+        }),
+      );
+    }
+  };
+
+  const gameHandler = (card: ISelectedCard) => {
+    const selectedCardWord = card.word;
     if (selectedCardWord === playedCard.word) {
-      const updatedCards = [...gameCards].filter((card) => card.word !== selectedCardWord);
-      addGuessedCard([...guessedCards, word!]);
+      const updatedCards = [...gameCards].filter((gameCard) => gameCard.word !== selectedCardWord);
+      addGuessedCard([...guessedCards, card.word!]);
       addAnswer([...answers, true]);
       playSound('audio/correct.mp3');
+      saveCorrect(card);
 
       if (gameCards.length === 1) {
         setStarted(false);
-        console.log('all matched');
         setGameOver(true);
       } else {
         updateGameCards(updatedCards);
@@ -59,6 +103,7 @@ export const WordSet = () => {
     } else {
       addAnswer([...answers, false]);
       playSound('audio/error.mp3');
+      saveWrong(playedCard);
     }
   };
 
@@ -105,7 +150,7 @@ export const WordSet = () => {
             {mode === 'game' && (
               <button
                 type="button"
-                className={isGameStarted ? 'game-button repeat' : 'game-button'}
+                className={isGameStarted ? 'button game-button repeat' : 'button game-button'}
                 onClick={() => (isGameStarted ? repeat() : startGame())}>
                 {isGameStarted ? <img src="./assets/icons/repeat.svg" alt="repeat" /> : 'Start Game'}
               </button>

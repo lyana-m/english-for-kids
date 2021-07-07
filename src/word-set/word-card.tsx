@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducers/rootReducer';
 import { playSound } from '../utils';
+import { ISelectedCard } from './word-set';
 
 interface IGameHandler {
-  (word: string | undefined): void;
+  (card: ISelectedCard): void;
 }
 
 export interface IProps {
@@ -13,19 +14,45 @@ export interface IProps {
   translation?: string;
   image?: string;
   audioSrc?: string;
-  isGameStarted: boolean;
-  gameHandler: IGameHandler;
-  isCardGuessed: boolean;
+  isGameStarted?: boolean;
+  gameHandler?: IGameHandler;
+  isCardGuessed?: boolean;
 }
 
 export const WordCard = (props: IProps) => {
   const [isFlipped, setFlipped] = useState(false);
 
   const mode = useSelector((state: RootState) => state.cardSet?.mode);
+  const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
 
-  const playWord = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, src: string | undefined) => {
+  const saveClick = (card: ISelectedCard) => {
+    const old = localStorage.getItem(card.word);
+
+    if (old) {
+      const savedCard = JSON.parse(old);
+      localStorage.setItem(
+        savedCard.word,
+        JSON.stringify({
+          word: savedCard.word,
+          translation: savedCard.translation,
+          category: savedCard.category,
+          clicks: savedCard.clicks + 1,
+          correct: savedCard.correct,
+          wrong: savedCard.wrong,
+          error: savedCard.error,
+          image: savedCard.image,
+          audio: savedCard.audio,
+        }),
+      );
+      console.log('savedCard', savedCard);
+      console.log('old', old);
+    }
+  };
+
+  const playWord = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, src: string | undefined, card: ISelectedCard) => {
     if (!(e.target as HTMLElement).classList.contains('arrow-btn-icon') && mode === 'train') {
       playSound(src);
+      saveClick(card);
     }
   };
 
@@ -36,7 +63,11 @@ export const WordCard = (props: IProps) => {
   return (
     <div className={props.isCardGuessed ? 'card guessed' : 'card'}>
       <div
-        onClick={(e) => (props.isGameStarted ? props.gameHandler(props.word) : playWord(e, props.audioSrc))}
+        onClick={(e) =>
+          props.isGameStarted
+            ? props.gameHandler!({ word: props.word!, translation: props.translation })
+            : playWord(e, props.audioSrc, { word: props.word!, translation: props.translation })
+        }
         className={!isFlipped ? 'front' : 'front front-flipped'}
         style={cardImage}>
         {mode === 'train' && (

@@ -28,6 +28,11 @@ export const Navigation = () => {
         {categoriesSet.map((cat, index) => {
           return <NavItem key={index} cardSet={index} category={cat} />;
         })}
+        <li className="nav-item" onClick={() => setCardSetNumber(-2)}>
+          <Link to="/statistics" className={cardSetNumber === -2 ? 'nav-link nav-link_active' : 'nav-link'}>
+            Statistics
+          </Link>
+        </li>
       </ul>
     </div>
   );

@@ -28,6 +28,8 @@ module.exports = {
     rules: {
       'linebreak-style': 'off',
       'import/prefer-default-export': 'off',
+      'import/no-cycle': 'off',
+      'no-unneeded-ternary': 'off',
       'react/destructuring-assignment': 'off',
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/no-static-element-interactions': 'off',
