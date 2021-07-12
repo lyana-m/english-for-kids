@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { categoriesSet } from '../word-set/cardsProps';
 import { NavItem } from './link';
 import { RootState } from '../reducers/rootReducer';
-import { SET_CARD_SET_NUMBER } from '../constants';
+import { IS_GAME_STARTED, SET_CARD_SET_NUMBER } from '../constants';
 
 export const Navigation = () => {
   const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
@@ -19,7 +19,12 @@ export const Navigation = () => {
   return (
     <div className={isMenuOpened ? 'nav nav-opened' : 'nav'}>
       <ul className="nav-list">
-        <li className="nav-item" onClick={() => setCardSetNumber(-1)}>
+        <li
+          className="nav-item"
+          onClick={() => {
+            setCardSetNumber(-1);
+            dispatch({ type: IS_GAME_STARTED, isGameStarted: false });
+          }}>
           <Link to="/" className={cardSetNumber === -1 ? 'nav-link nav-link_active' : 'nav-link'}>
             Main
           </Link>
@@ -28,7 +33,12 @@ export const Navigation = () => {
         {categoriesSet.map((cat, index) => {
           return <NavItem key={index} cardSet={index} category={cat} />;
         })}
-        <li className="nav-item" onClick={() => setCardSetNumber(-2)}>
+        <li
+          className="nav-item"
+          onClick={() => {
+            setCardSetNumber(-2);
+            dispatch({ type: IS_GAME_STARTED, isGameStarted: false});
+          }}>
           <Link to="/statistics" className={cardSetNumber === -2 ? 'nav-link nav-link_active' : 'nav-link'}>
             Statistics
           </Link>

@@ -1,14 +1,16 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { MODE } from '../constants';
+import { IS_GAME_STARTED, MODE } from '../constants';
 import { RootState } from '../reducers/rootReducer';
 
 export const Switch = () => {
   const mode = useSelector((state: RootState) => state.cardSet?.mode);
+  const isGameStarted = useSelector((state: RootState) => state.cardSet?.isGameStarted);
 
   const dispatch = useDispatch();
   const changeHandler = () => {
     dispatch({ type: MODE, mode: mode === 'train' ? 'game' : 'train' });
+    dispatch({type: IS_GAME_STARTED, isGameStarted: isGameStarted ? false : isGameStarted});
   };
 
   return (

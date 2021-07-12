@@ -23,7 +23,6 @@ export const Table = (props: ITableProps) => {
   const [sortOrder, setSortOrder] = useState('ASC');
 
   if (props.clear === 'clear') {
-    console.log('clear');
     categoriesSet.forEach((set, index) => {
       cardsSet[index].forEach((card) => {
         localStorage.setItem(

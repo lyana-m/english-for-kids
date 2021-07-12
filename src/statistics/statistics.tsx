@@ -35,7 +35,6 @@ export const Statistics = () => {
     });
     difficultWords.sort((a, b) => (a.wrong < b.wrong ? 1 : -1));
     const difficultWords2 = [...difficultWords].filter((word) => word.wrong).filter((word, index) => index < 8);
-    console.log(difficultWords2);
     setDifficultWordsToRepeat(difficultWords2);
   };
 

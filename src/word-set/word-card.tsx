@@ -23,6 +23,7 @@ export const WordCard = (props: IProps) => {
   const [isFlipped, setFlipped] = useState(false);
 
   const mode = useSelector((state: RootState) => state.cardSet?.mode);
+  const isGameStarted = useSelector((state: RootState) => state.cardSet?.isGameStarted);
   const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
 
   const saveClick = (card: ISelectedCard) => {
@@ -44,8 +45,6 @@ export const WordCard = (props: IProps) => {
           audio: savedCard.audio,
         }),
       );
-      console.log('savedCard', savedCard);
-      console.log('old', old);
     }
   };
 
@@ -60,11 +59,18 @@ export const WordCard = (props: IProps) => {
     background: `url(./assets/${props.image}) top left / cover no-repeat`,
   };
 
+  let cardClassName = 'card';
+  if (props.isCardGuessed && isGameStarted) {
+    cardClassName += ' guessed'
+  } else {
+    cardClassName = 'card';
+  }
+
   return (
-    <div className={props.isCardGuessed ? 'card guessed' : 'card'}>
+    <div className={cardClassName}>
       <div
         onClick={(e) =>
-          props.isGameStarted
+          isGameStarted
             ? props.gameHandler!({ word: props.word!, translation: props.translation })
             : playWord(e, props.audioSrc, { word: props.word!, translation: props.translation })
         }

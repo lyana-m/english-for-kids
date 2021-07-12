@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { WordCard } from './word-card';
 import { cardsSet, categoriesSet, IWordCard } from './cardsProps';
 import { RootState } from '../reducers/rootReducer';
 
 import { playSound, getRandomInteger } from '../utils';
 import { GameOver } from './game-over';
+import { GAME_CARDS, GUESSED_CARDS, IS_GAME_STARTED } from '../constants';
 
 export interface ISelectedCard {
   word: string;
@@ -14,7 +15,6 @@ export interface ISelectedCard {
 }
 
 export const WordSet = () => {
-  const [isGameStarted, setStarted] = useState(false);
   const [playedCard, setPlayedCard] = useState({ word: '', translation: '', image: '', audioSrc: '' });
   const [guessedCards, addGuessedCard] = useState<string[]>([]);
   const [answers, addAnswer] = useState<boolean[]>([]);
@@ -22,19 +22,26 @@ export const WordSet = () => {
 
   const mode = useSelector((state: RootState) => state.cardSet?.mode);
   const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
-  const cards: IWordCard[] = cardsSet[cardSetNumber!];
+  const isGameStarted = useSelector((state: RootState) => state.cardSet?.isGameStarted);
+  let cards: IWordCard[] = cardsSet[cardSetNumber!];
 
   const [gameCards, updateGameCards] = useState([...cards]);
 
-  const setCurrentWord = (cardsArray: IWordCard[]) => {
+  const dispatch = useDispatch();
+
+    const setCurrentWord = (cardsArray: IWordCard[]) => {
     const randomCard = cardsArray[getRandomInteger(0, cardsArray.length - 1)];
     setPlayedCard(randomCard);
     setTimeout(() => playSound(randomCard.audioSrc), 1000);
   };
 
   const startGame = () => {
-    setStarted(true);
-    setCurrentWord(gameCards);
+    addGuessedCard([]);
+    addAnswer([]);
+    const newGameGards = cards;
+    updateGameCards(newGameGards);
+    setCurrentWord(newGameGards);
+    dispatch({type: IS_GAME_STARTED, isGameStarted: true});
   };
 
   const repeat = () => {
@@ -94,7 +101,7 @@ export const WordSet = () => {
       saveCorrect(card);
 
       if (gameCards.length === 1) {
-        setStarted(false);
+        dispatch({type: IS_GAME_STARTED, isGameStarted: false});
         setGameOver(true);
       } else {
         updateGameCards(updatedCards);
@@ -116,7 +123,7 @@ export const WordSet = () => {
           <>
             <h2 className="selected-category">{categoriesSet[cardSetNumber]}</h2>
             <div className="stars-container">
-              {answers.map((answer, index) => {
+              {isGameStarted && answers.map((answer, index) => {
                 if (answer === true) {
                   return (
                     <div key={index} className="star filled-star">
