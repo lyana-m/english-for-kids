@@ -1,35 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { WordCard } from './word-card';
-import { cardsSet, categoriesSet, IWordCard } from './cardsProps';
 import { RootState } from '../reducers/rootReducer';
-
-import { playSound, getRandomInteger } from '../utils';
+import { RouteComponentProps } from 'react-router-dom';
+import { playSound, getRandomInteger } from '../services/utils';
 import { GameOver } from './game-over';
-import { GAME_CARDS, GUESSED_CARDS, IS_GAME_STARTED } from '../constants';
+import { IS_GAME_STARTED } from '../constants';
+import { getWords } from '../services/api';
 
 export interface ISelectedCard {
   word: string;
   audioSrc?: string;
   translation?: string;
 }
+type TParams = { id: string };
 
-export const WordSet = () => {
+interface IWordCard {
+  word: string;
+  translation: string;
+  image: string;
+  audioSrc: string;
+}
+
+export const WordSet = ({ match }: RouteComponentProps<TParams>) => {
   const [playedCard, setPlayedCard] = useState({ word: '', translation: '', image: '', audioSrc: '' });
   const [guessedCards, addGuessedCard] = useState<string[]>([]);
   const [answers, addAnswer] = useState<boolean[]>([]);
   const [isGameOver, setGameOver] = useState(false);
+  const [words, setWords] = useState([]);
 
   const mode = useSelector((state: RootState) => state.cardSet?.mode);
-  const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
   const isGameStarted = useSelector((state: RootState) => state.cardSet?.isGameStarted);
-  let cards: IWordCard[] = cardsSet[cardSetNumber!];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const words = await getWords(match.params.id, 'user');
+      setWords(words);
+    };
+    fetchData();
+  }, [match.params.id]);
+
+  let cards: IWordCard[] = words;
 
   const [gameCards, updateGameCards] = useState([...cards]);
 
   const dispatch = useDispatch();
 
-    const setCurrentWord = (cardsArray: IWordCard[]) => {
+  const setCurrentWord = (cardsArray: IWordCard[]) => {
     const randomCard = cardsArray[getRandomInteger(0, cardsArray.length - 1)];
     setPlayedCard(randomCard);
     setTimeout(() => playSound(randomCard.audioSrc), 1000);
@@ -41,7 +58,7 @@ export const WordSet = () => {
     const newGameGards = cards;
     updateGameCards(newGameGards);
     setCurrentWord(newGameGards);
-    dispatch({type: IS_GAME_STARTED, isGameStarted: true});
+    dispatch({ type: IS_GAME_STARTED, isGameStarted: true });
   };
 
   const repeat = () => {
@@ -97,11 +114,11 @@ export const WordSet = () => {
       const updatedCards = [...gameCards].filter((gameCard) => gameCard.word !== selectedCardWord);
       addGuessedCard([...guessedCards, card.word!]);
       addAnswer([...answers, true]);
-      playSound('audio/correct.mp3');
+      playSound('/assets/audio/correct.mp3');
       saveCorrect(card);
 
       if (gameCards.length === 1) {
-        dispatch({type: IS_GAME_STARTED, isGameStarted: false});
+        dispatch({ type: IS_GAME_STARTED, isGameStarted: false });
         setGameOver(true);
       } else {
         updateGameCards(updatedCards);
@@ -109,7 +126,7 @@ export const WordSet = () => {
       }
     } else {
       addAnswer([...answers, false]);
-      playSound('audio/error.mp3');
+      playSound('/assets/audio/error.mp3');
       saveWrong(playedCard);
     }
   };
@@ -121,22 +138,23 @@ export const WordSet = () => {
           <GameOver isWon={!answers.includes(false)} mistakes={answers.filter((answer) => answer === false).length} />
         ) : (
           <>
-            <h2 className="selected-category">{categoriesSet[cardSetNumber]}</h2>
+            <h2 className="selected-category"></h2>
             <div className="stars-container">
-              {isGameStarted && answers.map((answer, index) => {
-                if (answer === true) {
+              {isGameStarted &&
+                answers.map((answer, index) => {
+                  if (answer === true) {
+                    return (
+                      <div key={index} className="star filled-star">
+                        <img src="/assets/icons/star-filled.svg" alt="yes" />
+                      </div>
+                    );
+                  }
                   return (
-                    <div key={index} className="star filled-star">
-                      <img src="./assets/icons/star-filled.svg" alt="yes" />
+                    <div key={index} className="star outlined-star">
+                      <img src="/assets/icons/star-outlined.svg" alt="no" />
                     </div>
                   );
-                }
-                return (
-                  <div key={index} className="star outlined-star">
-                    <img src="./assets/icons/star-outlined.svg" alt="no" />
-                  </div>
-                );
-              })}
+                })}
             </div>
             <div className="cards-contaiter">
               {cards?.map((card, index) => {
@@ -159,7 +177,7 @@ export const WordSet = () => {
                 type="button"
                 className={isGameStarted ? 'button game-button repeat' : 'button game-button'}
                 onClick={() => (isGameStarted ? repeat() : startGame())}>
-                {isGameStarted ? <img src="./assets/icons/repeat.svg" alt="repeat" /> : 'Start Game'}
+                {isGameStarted ? <img src="/assets/icons/repeat.svg" alt="repeat" /> : 'Start Game'}
               </button>
             )}
           </>

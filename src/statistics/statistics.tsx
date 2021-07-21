@@ -30,9 +30,14 @@ export const Statistics = () => {
     setRepeatMode(true);
     const difficultWords: IRepetedCard[] = [];
 
+    const excludedKey = ['length', 'clear', 'getItem', 'key', 'removeItem', 'setItem', 'admin', 'mode'];
+
     Object.keys(localStorage).forEach((key) => {
-      difficultWords.push(JSON.parse(localStorage.getItem(key)!));
+      if (!excludedKey.includes(key)) {
+        difficultWords.push(JSON.parse(localStorage.getItem(key)!));
+      }
     });
+
     difficultWords.sort((a, b) => (a.wrong < b.wrong ? 1 : -1));
     const difficultWords2 = [...difficultWords].filter((word) => word.wrong).filter((word, index) => index < 8);
     setDifficultWordsToRepeat(difficultWords2);

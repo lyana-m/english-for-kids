@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducers/rootReducer';
-import { playSound } from '../utils';
+import { playSound } from '../services/utils';
 import { ISelectedCard } from './word-set';
 
 interface IGameHandler {
@@ -24,7 +24,6 @@ export const WordCard = (props: IProps) => {
 
   const mode = useSelector((state: RootState) => state.cardSet?.mode);
   const isGameStarted = useSelector((state: RootState) => state.cardSet?.isGameStarted);
-  const cardSetNumber = useSelector((state: RootState) => state.cardSet?.cardSetNumber);
 
   const saveClick = (card: ISelectedCard) => {
     const old = localStorage.getItem(card.word);
@@ -56,12 +55,12 @@ export const WordCard = (props: IProps) => {
   };
 
   const cardImage = {
-    background: `url(./assets/${props.image}) top left / cover no-repeat`,
+    background: `url(${props.image}) top left / cover no-repeat`,
   };
 
   let cardClassName = 'card';
   if (props.isCardGuessed && isGameStarted) {
-    cardClassName += ' guessed'
+    cardClassName += ' guessed';
   } else {
     cardClassName = 'card';
   }

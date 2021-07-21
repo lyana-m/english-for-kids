@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-
-import { cardsSet, categoriesSet } from '../word-set/cardsProps';
+import React, { useEffect, useState } from 'react';
+import { getAllWords } from '../services/api';
 import { Row } from './row';
 
 export interface IStatWord {
@@ -18,32 +17,47 @@ interface ITableProps {
   clear: string;
 }
 
+interface IStatisticsWord {
+  word: string;
+  translation: string;
+  categoryName: string;
+  image: string;
+  audio: string;
+}
+
 export const Table = (props: ITableProps) => {
+  const [statWords, setStatWords] = useState<IStatisticsWord[]>([]);
   const [sortCriteria, setSortCriteria] = useState('word');
   const [sortOrder, setSortOrder] = useState('ASC');
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const words = await getAllWords('user');
+      setStatWords(words);
+    };
+    fetchData();
+  }, []);
+
   if (props.clear === 'clear') {
-    categoriesSet.forEach((set, index) => {
-      cardsSet[index].forEach((card) => {
-        localStorage.setItem(
-          card.word,
-          JSON.stringify({
-            word: card.word,
-            translation: card.translation,
-            category: set,
-            clicks: 0,
-            correct: 0,
-            wrong: 0,
-            percentage: 0,
-            image: card.image,
-            audio: card.audioSrc,
-          }),
-        );
-      });
+    statWords.forEach((card) => {
+      localStorage.setItem(
+        card.word,
+        JSON.stringify({
+          word: card.word,
+          translation: card.translation,
+          category: card.categoryName,
+          clicks: 0,
+          correct: 0,
+          wrong: 0,
+          percentage: 0,
+          image: card.image,
+          audio: card.audio,
+        }),
+      );
     });
   }
 
-  const excludedKey = ['length', 'clear', 'getItem', 'key', 'removeItem', 'setItem'];
+  const excludedKey = ['length', 'clear', 'getItem', 'key', 'removeItem', 'setItem', 'admin', 'mode'];
   const allWords: IStatWord[] = [];
   Object.keys(localStorage).forEach((key) => {
     if (!excludedKey.includes(key)) {
